@@ -52,7 +52,7 @@ void init_display(){
   TRISBbits.TRISB4 = 0;
 
   //display_digits(CHAR_BLANK,CHAR_BLANK,CHAR_BLANK,CHAR_BLANK,CHAR_BLANK,CHAR_BLANK);
-  display_digits(0,1,2,3,4,5);
+  display_digits(8,8,8,8,8,8);
 }
 
 
