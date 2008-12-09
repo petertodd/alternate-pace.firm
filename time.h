@@ -1,6 +1,6 @@
 // ### BOILERPLATE ###
 // Alternate Pace Firmware
-// Copyright (C) 2007 Peter Todd <pete@petertodd.org>
+// Copyright (C) 2007, 2008 Peter Todd <pete@petertodd.org>
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #define secs_to_real_secs_divider (num_time_secs / 60)
 
 extern volatile uint8_t time_tics,time_secs,time_mins,time_hours;
+extern volatile uint8_t time_trick_tics,time_trick_secs,time_trick_mins,time_trick_hours;
 
 void init_time();
 

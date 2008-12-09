@@ -1,6 +1,6 @@
 // ### BOILERPLATE ###
 // Alternate Pace Firmware
-// Copyright (C) 2007 Peter Todd <pete@petertodd.org>
+// Copyright (C) 2007, 2008 Peter Todd <pete@petertodd.org>
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 #include <metrics.h>
 #include <ds3231.h>
 
-enum mode_t {extra_fast_clock,fast_clock,normal_clock,slow_clock,extra_slow_clock,none_chosen};
+#include <user.h>
 
 enum mode_t mode;
 
@@ -75,11 +75,9 @@ void init_user(){
   debounce_init(mins_debounce,mins_switch_raw);
   debounce_init(secs_debounce,secs_switch_raw);
 
-  if (!hours_switch_raw && !mins_switch_raw && secs_switch_raw){
-    mode = normal_clock;
-  } else if (hours_switch_raw && !mins_switch_raw && !secs_switch_raw){
-    mode = normal_clock;
-  } else if (!hours_switch_raw && mins_switch_raw && !secs_switch_raw){
+  mode = normal_clock;
+
+  if (!hours_switch_raw && mins_switch_raw && !secs_switch_raw){
     // Oooh! Metrics display mode! Don't see that very often...
     inc_metric_meta();
 
@@ -110,16 +108,6 @@ void init_user(){
       debounce_add_sample(hours_debounce,hours_switch_raw);
       debounce_add_sample(secs_debounce,secs_switch_raw);
     }
-
-  } else {
-    mode = none_chosen;
-  }
-
-  if (mode == none_chosen){
-    mode = eeprom_read_uint32(EEPROM_ADDR_MODE);  
-  } else {
-    eeprom_write_uint32(mode,EEPROM_ADDR_MODE);
-    trigger_save_eeprom();
   }
 
   silly_hour_display = eeprom_read_uint32(EEPROM_ADDR_SILLY_HOUR_DISPLAY);
@@ -129,13 +117,15 @@ void init_user(){
 void display_time(){
   uint8_t adj_secs,adj_mins,adj_hours,h0,h1;
 
-  adj_secs = (time_secs / (secs_to_real_secs_divider / 1)) % 60;
+#define TIME(n) (mode == normal_clock ? time_ ## n : time_trick_ ## n)
+
+  adj_secs = (TIME(secs) / (secs_to_real_secs_divider / 1)) % 60;
 
 
   set_dots(false,true,true,true,true,false);
 
   //  By popular request... blah.
-  adj_hours = time_hours;
+  adj_hours = TIME(hours);
   if (silly_hour_display){
     if (adj_hours >= 12){
       adj_hours = adj_hours - 12;
@@ -158,7 +148,7 @@ void display_time(){
   h1 = adj_hours % 16;
 
 
-  adj_mins = to_bcd(time_mins);
+  adj_mins = to_bcd(TIME(mins));
   adj_secs = to_bcd(adj_secs);
   display_digits(
                  h0,h1,
@@ -186,6 +176,17 @@ void check_for_keypresses(){
   }
 
   if (debounce_just_pressed(secs_debounce,secs_switch_raw)){
+    if (mode == normal_clock){
+      time_trick_hours = time_hours;
+      time_trick_mins = time_mins;
+      time_trick_secs = time_secs;
+      mode = trick_clock;
+    } else {
+      mode = normal_clock;
+    }
+    inc_metric_sw_secs();
+  } else if (debounce_held_down(secs_debounce,secs_switch_raw)){
+    mode = normal_clock;
     clear_secs();
     inc_metric_sw_secs();
   }

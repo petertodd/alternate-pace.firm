@@ -1,6 +1,6 @@
 // ### BOILERPLATE ###
 // Alternate Pace Firmware
-// Copyright (C) 2007 Peter Todd <pete@petertodd.org>
+// Copyright (C) 2007, 2008 Peter Todd <pete@petertodd.org>
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,6 +23,10 @@
 void init_user();
 
 void do_user();
+
+enum mode_t {normal_clock,trick_clock};
+
+extern enum mode_t mode;
 
 // Local Variables:
 // mode: C

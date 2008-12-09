@@ -1,6 +1,6 @@
 // ### BOILERPLATE ###
 // Alternate Pace Firmware
-// Copyright (C) 2007 Peter Todd <pete@petertodd.org>
+// Copyright (C) 2007, 2008 Peter Todd <pete@petertodd.org>
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,11 +18,13 @@
 // ### BOILERPLATE ###
 
 #include <common.h>
+#include <user.h>
 #include <time.h>
 #include <ds3231.h>
 #include <metrics.h>
 
 volatile uint8_t time_tics,time_secs,time_mins,time_hours;
+volatile uint8_t time_trick_tics,time_trick_secs,time_trick_mins,time_trick_hours;
 
 void init_time(){
   init_ds3231();
@@ -35,24 +37,42 @@ void init_time(){
 }
 
 void inc_hours(){
-  time_hours++;
-  if (time_hours >= num_time_hours)
-    time_hours = 0;
-  write_time_to_ds3231(ds3231_write_hours);
+  if (mode == normal_clock){
+    time_hours++;
+    if (time_hours >= num_time_hours)
+      time_hours = 0;
+    write_time_to_ds3231(ds3231_write_hours);
+  } else {
+    time_trick_hours++;
+    if (time_trick_hours >= num_time_hours)
+      time_trick_hours = 0;
+  }
 }
 
 void dec_hours(){
-  time_hours--;
-  if (time_hours >= num_time_hours)
-    time_hours = num_time_hours - 1;
-  write_time_to_ds3231(ds3231_write_hours);
+  if (mode == normal_clock){
+    time_hours--;
+    if (time_hours >= num_time_hours)
+      time_hours = num_time_hours - 1;
+    write_time_to_ds3231(ds3231_write_hours);
+  } else {
+    time_trick_hours--;
+    if (time_trick_hours >= num_time_hours)
+      time_trick_hours = num_time_hours - 1;
+  }
 }
 
 void inc_mins(){
-  time_mins++;
-  if (time_mins >= num_time_mins)
-    time_mins = 0;
-  write_time_to_ds3231(ds3231_write_mins);
+  if (mode == normal_clock){
+    time_mins++;
+    if (time_mins >= num_time_mins)
+      time_mins = 0;
+    write_time_to_ds3231(ds3231_write_mins);
+  } else {
+    time_trick_mins++;
+    if (time_trick_mins >= num_time_mins)
+      time_trick_mins = 0;
+  }
 }
 
 #if 0 // not used
@@ -121,6 +141,32 @@ void do_time(){
         time_hours++;
         if (time_hours >= num_time_hours){
           time_hours = 0;
+        }
+      }
+    }
+  }
+
+  // Basically replicate all of the above for the "trick" time version
+  time_trick_tics++;
+  // Speed up everything by 2
+  if (time_trick_tics == (num_time_tics / 2)){
+    time_trick_tics = 0;
+
+    time_trick_secs++;
+    if (time_trick_secs >= num_time_secs){
+      time_trick_secs = 0;
+
+      // No rsync code in this version, calculating it all would be tough,
+      // essentially you'd have to look for 0 or 30 as "matches", doubling the
+      // number of cases.
+
+      time_trick_mins++;
+      if (time_trick_mins >= num_time_mins){
+        time_trick_mins = 0;
+
+        time_trick_hours++;
+        if (time_trick_hours >= num_time_hours){
+          time_trick_hours = 0;
         }
       }
     }

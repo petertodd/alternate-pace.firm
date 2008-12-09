@@ -1,6 +1,6 @@
 // ### BOILERPLATE ###
 // Alternate Pace Firmware 
-// Copyright (C) 2007 Peter Todd <pete@petertodd.org>
+// Copyright (C) 2007, 2008 Peter Todd <pete@petertodd.org>
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@
 #define EEPROM_ADDR_METRIC_MIN_TEMP (5)
 #define EEPROM_ADDR_METRIC_META (6)
 
-#define EEPROM_ADDR_MODE (7)
+// #define EEPROM_ADDR_MODE (7) not used for trick version
 #define EEPROM_ADDR_SILLY_HOUR_DISPLAY (8)
 
 #define num_eeprom_items (9)
