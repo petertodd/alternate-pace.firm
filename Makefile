@@ -55,7 +55,7 @@ burn: combined.hex
 burned/combined.hex: combined.hex 
 	mkdir burned
 	cp *.cod *.cof *.hex *.lst burned/
-	git add burned/*
+	git add -f burned/*
 
 archived_burn: burned/combined.hex 
 	pk2 -progress -write burned/combined.hex
