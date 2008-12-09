@@ -76,9 +76,9 @@ void init_user(){
   debounce_init(secs_debounce,secs_switch_raw);
 
   if (!hours_switch_raw && !mins_switch_raw && secs_switch_raw){
-    mode = fast_clock;
+    mode = normal_clock;
   } else if (hours_switch_raw && !mins_switch_raw && !secs_switch_raw){
-    mode = slow_clock;
+    mode = normal_clock;
   } else if (!hours_switch_raw && mins_switch_raw && !secs_switch_raw){
     // Oooh! Metrics display mode! Don't see that very often...
     inc_metric_meta();
@@ -129,16 +129,7 @@ void init_user(){
 void display_time(){
   uint8_t adj_secs,adj_mins,adj_hours,h0,h1;
 
-  // Adjust seconds based on fast, or slow, mode.
-  if (mode == fast_clock){
-    // Pretty easy, counting from (0-140)/2, display 0-60 twice.
-    adj_secs = (time_secs / (secs_to_real_secs_divider / 2)) % 60;
-  } else {
-    // Slow clock.
-    //
-    // Harder, need to look at what minute it is as well.
-    adj_secs = (time_secs / (secs_to_real_secs_divider * 2)) + ((time_mins % 2) * 30);
-  }
+  adj_secs = (time_secs / (secs_to_real_secs_divider / 1)) % 60;
 
 
   set_dots(false,true,true,true,true,false);
