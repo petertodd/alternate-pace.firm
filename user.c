@@ -188,6 +188,9 @@ void check_for_keypresses(){
   } else if (debounce_held_down(secs_debounce,secs_switch_raw)){
     mode = normal_clock;
     clear_secs();
+
+    // Adjust for the debounce delay
+    time_secs += secs_to_real_secs_divider * 2;
     inc_metric_sw_secs();
   }
 
