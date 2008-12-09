@@ -1,9 +1,7 @@
-firm/*.asm
-firm/*.lst
-firm/*.cof
-firm/*.cod
-firm/*.hex
-firm/*.o
-firm/.depend
-hard/elec/*gschem.log
-hard/elec/gnetlist.log
+.depend*
+alternate-pace.*
+*.asm
+*.lst
+*.o
+combined.hex
+*.swp
